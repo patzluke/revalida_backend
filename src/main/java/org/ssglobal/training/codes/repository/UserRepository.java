@@ -21,11 +21,11 @@ public class UserRepository {
 	}
 	
 	public boolean insertUser(
-			Integer employeeId, String email, String mobileNumber, 
+			String email, String mobileNumber, 
 			String password, String userType, String firstName, 
 			String middleName, String lastName, String department, 
 			LocalDate birthDate, String gender, String position) {
-		User user = new User(employeeId, email, mobileNumber, 
+		User user = new User(null, email, mobileNumber, 
 							 password, userType, firstName, 
 							 middleName, lastName, department, 
 							 birthDate, gender, position);
@@ -65,7 +65,7 @@ public class UserRepository {
 			return true;
 		} catch (Exception e) {
 			et.rollback();
-			e.printStackTrace();
+			e.getMessage();
 		} finally {
 			em.close();
 		}
@@ -74,13 +74,28 @@ public class UserRepository {
 	
 	@SuppressWarnings("unchecked")
 	public List<User> selectAllUser() {
-		String sql = "from User s";
+		String sql = "from User u";
 		List<User> bookList = new ArrayList<>();
 		try {
 			EntityManager em = this.entityManagerFactory.createEntityManager();
 			Query query = em.createQuery(sql, User.class);
 			bookList = query.getResultList();
 			return Collections.unmodifiableList(bookList);
+		} catch (Exception e) {
+			e.getMessage();
+		}
+		return null;
+	}
+	
+	public User searchUserByEmailAndPass(String email, String password) {
+		String sql = "from User u where u.email=:email and u.password=:password";
+		try {
+			EntityManager em = this.entityManagerFactory.createEntityManager();
+			Query query = em.createQuery(sql, User.class);
+			query.setParameter("email", email);
+			query.setParameter("password", password);
+			User user = (User) query.getSingleResult();
+			return user;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

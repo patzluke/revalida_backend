@@ -11,6 +11,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.MediaType;
 
@@ -24,13 +25,13 @@ public class UserService {
 	@Consumes(value = {MediaType.APPLICATION_JSON})
 	public User insertSurveyJson(User user) {
 		try {
-			userRepository.insertUser(user.getEmployeeId(), user.getEmail(), user.getMobileNumber(),
+			userRepository.insertUser(user.getEmail(), user.getMobileNumber(),
 									  user.getPassword(), user.getUserType(), user.getFirstName(),
 									  user.getMiddleName(), user.getLastName(), user.getDepartment(),
 									  user.getBirthDate(), user.getGender(), user.getPosition());
 			return user;
 		}catch(Exception e) {
-			e.printStackTrace();
+			e.getMessage();
 		}
 		return null;
 	}
@@ -46,9 +47,23 @@ public class UserService {
 			listUsers = new GenericEntity<>(users) {};
 			return listUsers;
 		}catch(Exception e) {
-			e.printStackTrace();
+			e.getMessage();
 		}
 		listUsers = new GenericEntity<>(null) {};
 		return listUsers;
+	}
+	
+	@GET
+	@Path("/get/query")
+	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+	public User getSurvey(@QueryParam("username") String username,
+						  @QueryParam("password") String password) {
+		try {
+			User user = userRepository.searchUserByEmailAndPass(username, password);
+			return user;
+		}catch(Exception e) {
+			e.getMessage();
+		}
+		return null;
 	}
 }
