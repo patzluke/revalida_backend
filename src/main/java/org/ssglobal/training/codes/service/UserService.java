@@ -2,7 +2,6 @@ package org.ssglobal.training.codes.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.ssglobal.training.codes.model.User;
 import org.ssglobal.training.codes.repository.UserRepository;
@@ -22,7 +21,6 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/users")
 public class UserService {
-	private static Logger logger = Logger.getLogger(UserService.class.getName());
 	private UserRepository userRepository = new UserRepository();
 	
 	@POST
@@ -44,7 +42,7 @@ public class UserService {
 	
 	@PUT
 	@Path("/update")
-	@Produces(value= {MediaType.TEXT_PLAIN})
+	@Produces(value= {MediaType.APPLICATION_JSON})
 	@Consumes(value = {MediaType.APPLICATION_JSON})
 	public User updateUser(User user) {
 		try {
@@ -63,7 +61,6 @@ public class UserService {
 	public Response deleteSurvey(@PathParam("id") Integer id) {
 		try {
 			Boolean result = userRepository.deleteUser(id);
-			logger.severe(result.toString() + " hey pat thisis the line");
 			if(result) {
 				return Response.ok().build();
 			} else {
@@ -75,7 +72,6 @@ public class UserService {
 		return Response.serverError().build();
 	}
 
-	
 	@GET
 	@Path("/get")
 	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
