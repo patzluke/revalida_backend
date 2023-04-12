@@ -36,6 +36,34 @@ public class UserService {
 		return null;
 	}
 	
+	@POST
+	@Path("/update")
+	@Produces(value= {MediaType.APPLICATION_JSON})
+	@Consumes(value = {MediaType.APPLICATION_JSON})
+	public User updateUser(User user, Integer id) {
+		try {
+			userRepository.updateUser(user, id);
+			return user;
+		}catch(Exception e) {
+			e.getMessage();
+		}
+		return null;
+	}
+	
+	@POST
+	@Path("/delete")
+	@Produces(value= {MediaType.APPLICATION_JSON})
+	@Consumes(value = {MediaType.APPLICATION_JSON})
+	public User deleteUser(User user) {
+		try {
+			userRepository.deleteUser(user.getEmployeeId());
+			return user;
+		}catch(Exception e) {
+			e.getMessage();
+		}
+		return null;
+	}
+	
 	@GET
 	@Path("/get")
 	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})

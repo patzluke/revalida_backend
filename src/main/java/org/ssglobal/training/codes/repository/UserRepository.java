@@ -1,9 +1,11 @@
 package org.ssglobal.training.codes.repository;
 
 import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 
 import org.ssglobal.training.codes.model.User;
 
@@ -49,6 +51,38 @@ public class UserRepository {
 		}
 		return false;
 	}
+	
+	public boolean updateUser(User newUser, Integer id) {
+		EntityTransaction tx = null;
+		try {
+			EntityManager em = entityManagerFactory.createEntityManager();
+			tx = em.getTransaction();
+			tx.begin();
+
+			User user = em.find(User.class, id);
+			if (user != null) {
+				user.setEmail(newUser.getEmail());
+				user.setMobileNumber(newUser.getMobileNumber());
+				user.setPassword(newUser.getPassword());
+				user.setUserType(newUser.getUserType());
+				user.setFirstName(newUser.getFirstName());
+				user.setMiddleName(newUser.getMiddleName());
+				user.setLastName(newUser.getLastName());
+				user.setDepartment(newUser.getDepartment());
+				user.setGender(newUser.getGender());
+				user.setPosition(newUser.getPosition());
+			}
+
+			tx.commit();
+			em.close();
+			return true;
+		} catch (Exception e) {
+			tx.rollback();
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	
 	public boolean deleteUser(Integer id) {
 		EntityManager em = null;
