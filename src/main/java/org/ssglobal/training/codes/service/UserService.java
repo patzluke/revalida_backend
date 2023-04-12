@@ -2,21 +2,27 @@ package org.ssglobal.training.codes.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.ssglobal.training.codes.model.User;
 import org.ssglobal.training.codes.repository.UserRepository;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/users")
 public class UserService {
+	private static Logger logger = Logger.getLogger(UserService.class.getName());
 	private UserRepository userRepository = new UserRepository();
 	
 	@POST
@@ -36,13 +42,13 @@ public class UserService {
 		return null;
 	}
 	
-	@POST
+	@PUT
 	@Path("/update")
-	@Produces(value= {MediaType.APPLICATION_JSON})
+	@Produces(value= {MediaType.TEXT_PLAIN})
 	@Consumes(value = {MediaType.APPLICATION_JSON})
-	public User updateUser(User user, Integer id) {
+	public User updateUser(User user) {
 		try {
-			userRepository.updateUser(user, id);
+			userRepository.updateUser(user);
 			return user;
 		}catch(Exception e) {
 			e.getMessage();
@@ -50,19 +56,25 @@ public class UserService {
 		return null;
 	}
 	
-	@POST
-	@Path("/delete")
-	@Produces(value= {MediaType.APPLICATION_JSON})
-	@Consumes(value = {MediaType.APPLICATION_JSON})
-	public User deleteUser(User user) {
+	@DELETE
+	@Path("/delete/{id}")
+	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+	@Consumes(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+	public Response deleteSurvey(@PathParam("id") Integer id) {
 		try {
-			userRepository.deleteUser(user.getEmployeeId());
-			return user;
+			Boolean result = userRepository.deleteUser(id);
+			logger.severe(result.toString() + " hey pat thisis the line");
+			if(result) {
+				return Response.ok().build();
+			} else {
+				return Response.status(400, "invalid employee ID").build();
+			}
 		}catch(Exception e) {
 			e.getMessage();
 		}
-		return null;
+		return Response.serverError().build();
 	}
+
 	
 	@GET
 	@Path("/get")
@@ -79,6 +91,19 @@ public class UserService {
 		}
 		listUsers = new GenericEntity<>(null) {};
 		return listUsers;
+	}
+	
+	@GET
+	@Path("/get/{id}")
+	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+	public User getUserById(@PathParam("id") Integer id) {
+		try {
+			User user = userRepository.getUseById(id);
+			return user;
+		}catch(Exception e) {
+			e.getMessage();
+		}
+		return null;
 	}
 	
 	@GET

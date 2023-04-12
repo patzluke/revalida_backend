@@ -52,27 +52,26 @@ public class UserRepository {
 		return false;
 	}
 	
-	public boolean updateUser(User newUser, Integer id) {
+	public boolean updateUser(User currentUser) {
 		EntityTransaction tx = null;
 		try {
 			EntityManager em = entityManagerFactory.createEntityManager();
 			tx = em.getTransaction();
 			tx.begin();
 
-			User user = em.find(User.class, id);
+			User user = em.find(User.class, currentUser.getEmployeeId());
 			if (user != null) {
-				user.setEmail(newUser.getEmail());
-				user.setMobileNumber(newUser.getMobileNumber());
-				user.setPassword(newUser.getPassword());
-				user.setUserType(newUser.getUserType());
-				user.setFirstName(newUser.getFirstName());
-				user.setMiddleName(newUser.getMiddleName());
-				user.setLastName(newUser.getLastName());
-				user.setDepartment(newUser.getDepartment());
-				user.setGender(newUser.getGender());
-				user.setPosition(newUser.getPosition());
+				user.setEmail(currentUser.getEmail());
+				user.setMobileNumber(currentUser.getMobileNumber());
+				user.setPassword(currentUser.getPassword());
+				user.setUserType(currentUser.getUserType());
+				user.setFirstName(currentUser.getFirstName());
+				user.setMiddleName(currentUser.getMiddleName());
+				user.setLastName(currentUser.getLastName());
+				user.setDepartment(currentUser.getDepartment());
+				user.setGender(currentUser.getGender());
+				user.setPosition(currentUser.getPosition());
 			}
-
 			tx.commit();
 			em.close();
 			return true;
@@ -128,6 +127,19 @@ public class UserRepository {
 			Query query = em.createQuery(sql, User.class);
 			query.setParameter("email", email);
 			query.setParameter("password", password);
+			User user = (User) query.getSingleResult();
+			return user;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public User getUseById(Integer id) {
+		String sql = "from User u where u.employeeId=:id";
+		try {
+			EntityManager em = this.entityManagerFactory.createEntityManager();
+			Query query = em.createQuery(sql, User.class);
+			query.setParameter("id", id);
 			User user = (User) query.getSingleResult();
 			return user;
 		} catch (Exception e) {
