@@ -134,7 +134,7 @@ public class UserRepository {
 		}
 		return null;
 	}
-	public User getUseById(Integer id) {
+	public User getUserById(Integer id) {
 		String sql = "from User u where u.employeeId=:id";
 		try {
 			EntityManager em = this.entityManagerFactory.createEntityManager();

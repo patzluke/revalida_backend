@@ -1,10 +1,13 @@
 package org.ssglobal.training.codes.service;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ssglobal.training.codes.cors.Secured;
 import org.ssglobal.training.codes.model.User;
 import org.ssglobal.training.codes.repository.UserRepository;
+import org.ssglobal.training.codes.repository.UserTokenRepository;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -22,8 +25,10 @@ import jakarta.ws.rs.core.Response;
 @Path("/users")
 public class UserService {
 	private UserRepository userRepository = new UserRepository();
+	private UserTokenRepository userTokenRepository = new UserTokenRepository();
 	
 	@POST
+	@Secured
 	@Path("/insert")
 	@Produces(value= {MediaType.APPLICATION_JSON})
 	@Consumes(value = {MediaType.APPLICATION_JSON})
@@ -41,6 +46,7 @@ public class UserService {
 	}
 	
 	@PUT
+	@Secured
 	@Path("/update")
 	@Produces(value= {MediaType.APPLICATION_JSON})
 	@Consumes(value = {MediaType.APPLICATION_JSON})
@@ -55,10 +61,11 @@ public class UserService {
 	}
 	
 	@DELETE
+	@Secured
 	@Path("/delete/{id}")
 	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	@Consumes(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Response deleteSurvey(@PathParam("id") Integer id) {
+	public Response deleteUser(@PathParam("id") Integer id) {
 		try {
 			Boolean result = userRepository.deleteUser(id);
 			if(result) {
@@ -73,6 +80,7 @@ public class UserService {
 	}
 
 	@GET
+	@Secured
 	@Path("/get")
 	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	public GenericEntity<List<User>> getAllSurveys() {
@@ -90,11 +98,12 @@ public class UserService {
 	}
 	
 	@GET
+	@Secured
 	@Path("/get/{id}")
 	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 	public User getUserById(@PathParam("id") Integer id) {
 		try {
-			User user = userRepository.getUseById(id);
+			User user = userRepository.getUserById(id);
 			return user;
 		}catch(Exception e) {
 			e.getMessage();
@@ -105,14 +114,31 @@ public class UserService {
 	@GET
 	@Path("/get/query")
 	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public User getSurvey(@QueryParam("username") String username,
+	public String authenticate(@QueryParam("username") String username,
 						  @QueryParam("password") String password) {
 		try {
 			User user = userRepository.searchUserByEmailAndPass(username, password);
-			return user;
-		}catch(Exception e) {
+			String token = generateToken(user.getEmployeeId(), username);
+			if (user != null) {
+				return token;
+			}
+		} catch(Exception e) {
 			e.getMessage();
 		}
 		return null;
+	}
+	
+	private String generateToken(Integer userId, String username) {
+		SecureRandom random = new SecureRandom();
+		String token = "%s&d%d%d%d%d%d"
+				.formatted(username, userId, 
+				random.nextLong(10), random.nextLong(10), random.nextLong(10),
+				random.nextLong(10), random.nextLong(10));
+		if (userTokenRepository.isUserTokenIdExists(userId)) {
+			userTokenRepository.updateUserToken(userId, token);
+			return token;
+		}
+		userTokenRepository.createToken(userId, token);
+		return token;
 	}
 }

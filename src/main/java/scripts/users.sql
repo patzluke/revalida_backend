@@ -18,3 +18,13 @@ create table users (
     gender varchar(10),
     position varchar(70)
 );
+
+insert into users(email, mobile_number, password, user_type, first_name, middle_name, last_name, department, birth_date, gender, position) 
+values('ally@gmail.com', '9178192726', '123456', 'employee', 'nika', 'artuz', 'astrero', 'development', '2015-07-25', 'female', 'developer 1');
+
+drop table if exists user_tokens;
+create table user_tokens (
+	user_id int,
+	token varchar(50),
+	foreign key(user_id) references users(employee_id)
+);
