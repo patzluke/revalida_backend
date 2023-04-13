@@ -27,7 +27,7 @@ public class MyCorsFilter implements ContainerResponseFilter, ContainerRequestFi
 		UriInfo uriInfo = requestContext.getUriInfo();
 		String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 		if (!uriInfo.getPath().contains("users/get/query")) {			
-			if (authorizationHeader == null) {
+			if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
 				throw new NotAuthorizedException("Authorization header must be provided");
 			}
 			String token = authorizationHeader.substring("Bearer".length()).trim();
@@ -56,3 +56,5 @@ public class MyCorsFilter implements ContainerResponseFilter, ContainerRequestFi
 		return false;
 	}
 }
+
+
