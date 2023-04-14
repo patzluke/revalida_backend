@@ -32,7 +32,7 @@ public class UserService {
 	@Path("/insert")
 	@Produces(value= {MediaType.APPLICATION_JSON})
 	@Consumes(value = {MediaType.APPLICATION_JSON})
-	public User insertSurveyJson(User user) {
+	public User createUser(User user) {
 		try {
 			userRepository.insertUser(user.getEmail(), user.getMobileNumber(),
 									  user.getPassword(), user.getUserType(), user.getFirstName(),
@@ -83,7 +83,7 @@ public class UserService {
 	@Secured
 	@Path("/get")
 	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public GenericEntity<List<User>> getAllSurveys() {
+	public GenericEntity<List<User>> getAllUsers() {
 		List<User> users = new ArrayList<>();
 		GenericEntity<List<User>> listUsers = null;
 		try {
@@ -114,13 +114,18 @@ public class UserService {
 	@GET
 	@Path("/get/query")
 	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public String authenticate(@QueryParam("username") String username,
+	public GenericEntity<List<Object>> authenticate(@QueryParam("username") String username,
 						  @QueryParam("password") String password) {
+		List<Object> userIdAndToken = new ArrayList<>();
 		try {
 			User user = userRepository.searchUserByEmailAndPass(username, password);
 			String token = generateToken(user.getEmployeeId(), username);
 			if (user != null) {
-				return token;
+				userIdAndToken.add(token);
+				userIdAndToken.add(user.getEmployeeId());
+				userIdAndToken.add(user.getEmail().toString());
+				userIdAndToken.add(user.getUserType());
+				return new GenericEntity<>(userIdAndToken) {};
 			}
 		} catch(Exception e) {
 			e.getMessage();
@@ -128,8 +133,10 @@ public class UserService {
 		return null;
 	}
 	
+	
 	private String generateToken(Integer userId, String username) {
 		SecureRandom random = new SecureRandom();
+		username = username.split("@")[0];
 		String token = "%s&d%d%d%d%d%d"
 				.formatted(username, userId, 
 				random.nextLong(10), random.nextLong(10), random.nextLong(10),

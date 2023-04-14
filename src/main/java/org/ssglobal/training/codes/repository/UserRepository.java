@@ -120,13 +120,12 @@ public class UserRepository {
 		return null;
 	}
 	
-	public User searchUserByEmailAndPass(String email, String password) {
-		String sql = "from User u where u.email=:email and u.password=:password";
+	public User getUserById(Integer id) {
+		String sql = "from User u where u.employeeId=:id";
 		try {
 			EntityManager em = this.entityManagerFactory.createEntityManager();
 			Query query = em.createQuery(sql, User.class);
-			query.setParameter("email", email);
-			query.setParameter("password", password);
+			query.setParameter("id", id);
 			User user = (User) query.getSingleResult();
 			return user;
 		} catch (Exception e) {
@@ -134,12 +133,14 @@ public class UserRepository {
 		}
 		return null;
 	}
-	public User getUserById(Integer id) {
-		String sql = "from User u where u.employeeId=:id";
+	
+	public User searchUserByEmailAndPass(String email, String password) {
+		String sql = "from User u where u.email=:email and u.password=:password";
 		try {
 			EntityManager em = this.entityManagerFactory.createEntityManager();
 			Query query = em.createQuery(sql, User.class);
-			query.setParameter("id", id);
+			query.setParameter("email", email);
+			query.setParameter("password", password);
 			User user = (User) query.getSingleResult();
 			return user;
 		} catch (Exception e) {

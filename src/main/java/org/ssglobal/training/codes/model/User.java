@@ -19,7 +19,7 @@ public class User {
 	private Integer employeeId;
 	private String email;
 	private String mobileNumber;
-	private transient String password;
+	private String password;
 	private String userType;
 	private String firstName;
 	private String middleName;

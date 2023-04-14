@@ -20,7 +20,7 @@ create table users (
 );
 
 insert into users(email, mobile_number, password, user_type, first_name, middle_name, last_name, department, birth_date, gender, position) 
-values('ally@gmail.com', '9178192726', '123456', 'employee', 'nika', 'artuz', 'astrero', 'development', '2015-07-25', 'female', 'developer 1');
+values('patz@gmail.com', '9178192726', '123456', 'admin', 'patrick', 'artuz', 'astrero', 'development', '2015-07-25', 'female', 'developer 1');
 
 drop table if exists user_tokens;
 create table user_tokens (
