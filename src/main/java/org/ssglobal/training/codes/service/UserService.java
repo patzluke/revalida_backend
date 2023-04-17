@@ -3,6 +3,7 @@ package org.ssglobal.training.codes.service;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.ssglobal.training.codes.cors.Secured;
 import org.ssglobal.training.codes.model.User;
@@ -24,6 +25,7 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/users")
 public class UserService {
+	private static Logger logger = Logger.getLogger(UserService.class.getName());
 	private UserRepository userRepository = new UserRepository();
 	private UserTokenRepository userTokenRepository = new UserTokenRepository();
 	
@@ -36,8 +38,8 @@ public class UserService {
 		try {
 			userRepository.insertUser(user.getEmail(), user.getMobileNumber(),
 									  user.getPassword(), user.getUserType(), user.getFirstName(),
-									  user.getMiddleName(), user.getLastName(), user.getDepartment(),
-									  user.getBirthDate(), user.getGender(), user.getPosition());
+									  user.getMiddleName(), user.getLastName(), user.getDepartmentId(),
+									  user.getBirthDate(), user.getGender(), user.getPositionId());
 			return user;
 		}catch(Exception e) {
 			e.getMessage();
@@ -78,11 +80,11 @@ public class UserService {
 		}
 		return Response.serverError().build();
 	}
-
+	
 	@GET
 	@Secured
 	@Path("/get")
-	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+	@Produces(value = {MediaType.APPLICATION_JSON})
 	public GenericEntity<List<User>> getAllUsers() {
 		List<User> users = new ArrayList<>();
 		GenericEntity<List<User>> listUsers = null;
@@ -91,10 +93,9 @@ public class UserService {
 			listUsers = new GenericEntity<>(users) {};
 			return listUsers;
 		}catch(Exception e) {
-			e.getMessage();
+			e.printStackTrace();
 		}
-		listUsers = new GenericEntity<>(null) {};
-		return listUsers;
+		return null;
 	}
 	
 	@GET

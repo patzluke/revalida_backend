@@ -3,7 +3,6 @@ package org.ssglobal.training.codes.repository;
 import java.time.LocalDate;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -25,12 +24,12 @@ public class UserRepository {
 	public boolean insertUser(
 			String email, String mobileNumber, 
 			String password, String userType, String firstName, 
-			String middleName, String lastName, String department, 
-			LocalDate birthDate, String gender, String position) {
+			String middleName, String lastName, Integer departmentId, 
+			LocalDate birthDate, String gender, Integer positionId) {
 		User user = new User(null, email, mobileNumber, 
 							 password, userType, firstName, 
-							 middleName, lastName, department, 
-							 birthDate, gender, position);
+							 middleName, lastName, departmentId, 
+							 birthDate, gender, positionId);
 
 		EntityManager em = null;
 		EntityTransaction et = null;
@@ -68,9 +67,9 @@ public class UserRepository {
 				user.setFirstName(currentUser.getFirstName());
 				user.setMiddleName(currentUser.getMiddleName());
 				user.setLastName(currentUser.getLastName());
-				user.setDepartment(currentUser.getDepartment());
+				user.setDepartmentId(currentUser.getDepartmentId());
 				user.setGender(currentUser.getGender());
-				user.setPosition(currentUser.getPosition());
+				user.setPositionId(currentUser.getPositionId());
 			}
 			tx.commit();
 			em.close();
@@ -113,9 +112,9 @@ public class UserRepository {
 			EntityManager em = this.entityManagerFactory.createEntityManager();
 			Query query = em.createQuery(sql, User.class);
 			bookList = query.getResultList();
-			return Collections.unmodifiableList(bookList);
+			return bookList;
 		} catch (Exception e) {
-			e.getMessage();
+			e.printStackTrace();
 		}
 		return null;
 	}

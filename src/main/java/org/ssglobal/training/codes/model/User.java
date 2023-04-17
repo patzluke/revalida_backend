@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -24,17 +25,17 @@ public class User {
 	private String firstName;
 	private String middleName;
 	private String lastName;
-	private String department;
+	private Integer departmentId;
 	private LocalDate birthDate;
 	private String gender;
-	private String position;
-	
+	private Integer positionId;
+			
 	public User() {}
 	
 	public User(Integer employeeId, String email, String mobileNumber, 
 				String password, String userType, String firstName, 
-				String middleName, String lastName, String department, 
-				LocalDate birthDate, String gender, String position) {
+				String middleName, String lastName, Integer department, 
+				LocalDate birthDate, String gender, Integer positionId) {
 		super();
 		this.employeeId = employeeId;
 		this.email = email;
@@ -44,10 +45,10 @@ public class User {
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
-		this.department = department;
+		this.departmentId = department;
 		this.birthDate = birthDate;
 		this.gender = gender;
-		this.position = position;
+		this.positionId = positionId;
 	}
 
 	@XmlElement
@@ -133,13 +134,13 @@ public class User {
 	}
 	
 	@XmlElement
-	@Column(name = "department", nullable = false, length = 70)
-	public String getDepartment() {
-		return department;
+	@Column(name = "dept_id", nullable = false, length = 70)
+	public Integer getDepartmentId() {
+		return departmentId;
 	}
 	
-	public void setDepartment(String department) {
-		this.department = department;
+	public void setDepartmentId(Integer departmentId) {
+		this.departmentId = departmentId;
 	}
 	
 	@XmlElement
@@ -161,22 +162,14 @@ public class User {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	
+
 	@XmlElement
-	@Column(name = "position", nullable = false, length = 70)
-	public String getPosition() {
-		return position;
+	@Column(name = "position_id", nullable = false, length = 70)
+	public Integer getPositionId() {
+		return positionId;
 	}
-	
-	public void setPosition(String position) {
-		this.position = position;
-	}
-	
-	@Override
-	public String toString() {
-		return "{%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s}"
-				.formatted(this.employeeId, this.email, this.mobileNumber, this.password, 
-						   this.userType, this.firstName, this.middleName, this.lastName,
-						   this.department, this.birthDate.toString(), this.gender, this.position);
+
+	public void setPositionId(Integer positionId) {
+		this.positionId = positionId;
 	}
 }

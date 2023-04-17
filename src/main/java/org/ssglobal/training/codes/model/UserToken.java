@@ -3,6 +3,8 @@ package org.ssglobal.training.codes.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -14,6 +16,7 @@ public class UserToken {
 
 	private Integer userId;
 	private String token;
+	private User user;
 	
 	public UserToken() { }
 	
@@ -42,6 +45,16 @@ public class UserToken {
 
 	public void setToken(String token) {
 		this.token = token;
+	}
+
+	@OneToOne
+	@JoinColumn(name = "user_id", updatable = false, insertable = false)
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 	
 }

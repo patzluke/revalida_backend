@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.ssglobal.training.codes.repository.UserTokenRepository;
+import org.ssglobal.training.codes.service.UserService;
 
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.NotAuthorizedException;
@@ -20,24 +21,30 @@ import jakarta.ws.rs.ext.Provider;
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class MyCorsFilter implements ContainerResponseFilter, ContainerRequestFilter {
-	private Logger logger = Logger.getLogger(MyCorsFilter.class.getName());
-	
+	private static Logger logger = Logger.getLogger(UserService.class.getName());
+
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
-		UriInfo uriInfo = requestContext.getUriInfo();
-		String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
-		if (!uriInfo.getPath().contains("users/get/query")) {			
-			if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-				throw new NotAuthorizedException("Authorization header must be provided");
+		try {
+			UriInfo uriInfo = requestContext.getUriInfo();
+			String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+			if (!uriInfo.getPath().contains("users/get/query")) {
+				if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+					logger.info("error occured here PATTTTT int the first if");
+					throw new NotAuthorizedException("Authorization header must be provided");
+				}
+				String token = authorizationHeader.substring("Bearer".length()).trim();
+				
+				if (!validateToken(token)) {
+					logger.info("error occured here PATTTTT int the second if");
+					requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+				}
 			}
-			String token = authorizationHeader.substring("Bearer".length()).trim();
-
-			if (!validateToken(token)) {
-				requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
 			throws IOException {
@@ -50,11 +57,8 @@ public class MyCorsFilter implements ContainerResponseFilter, ContainerRequestFi
 	private boolean validateToken(String token) {
 		UserTokenRepository userTokenRepository = new UserTokenRepository();
 		if (userTokenRepository.isUserTokenExists(token)) {
-			logger.info("nyeeeeeeeeeeeeeeee " + Boolean.valueOf(userTokenRepository.isUserTokenExists(token)).toString());
 			return true;
 		}
 		return false;
 	}
 }
-
-
