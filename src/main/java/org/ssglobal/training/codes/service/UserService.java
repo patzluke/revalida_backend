@@ -25,6 +25,7 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/users")
 public class UserService {
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(UserService.class.getName());
 	private UserRepository userRepository = new UserRepository();
 	private UserTokenRepository userTokenRepository = new UserTokenRepository();
