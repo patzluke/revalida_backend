@@ -36,7 +36,7 @@ create table users (
 drop table if exists user_tokens;
 create table user_tokens (
 	user_id int,
-	token varchar(50),
+	token varchar(200),
 	foreign key(user_id) references users(employee_id) on delete set null
 );
 

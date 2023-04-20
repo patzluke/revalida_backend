@@ -11,10 +11,10 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
 
-public class PositionRepo {
+public class PositionRepository {
 	private EntityManagerFactory entityManagerFactory;
 	
-	public PositionRepo() {
+	public PositionRepository() {
 		this.entityManagerFactory = Persistence.createEntityManagerFactory("user-persistence-unit");
 	}
 	
@@ -47,7 +47,7 @@ public class PositionRepo {
 			tx = em.getTransaction();
 			tx.begin();
 
-			Position dep = em.find(Position.class, currentpos.getPositionName());
+			Position dep = em.find(Position.class, currentpos.getPositionId());
 			if (dep != null) {
 				dep.setPositionName(currentpos.getPositionName());
 			}

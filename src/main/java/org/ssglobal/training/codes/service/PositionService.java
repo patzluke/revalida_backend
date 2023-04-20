@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.ssglobal.training.codes.cors.Secured;
 import org.ssglobal.training.codes.model.Position;
-import org.ssglobal.training.codes.repository.PositionRepo;
+import org.ssglobal.training.codes.repository.PositionRepository;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -18,21 +18,22 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 @Path("/position")
 public class PositionService {
 	
-	private PositionRepo posRepo = new PositionRepo();
+	private PositionRepository posRepo = new PositionRepository();
 	
 	@POST
 	@Secured
 	@Path("/insert")
 	@Produces(value= {MediaType.APPLICATION_JSON})
 	@Consumes(value = {MediaType.APPLICATION_JSON})
-	public Position createPosition(Position pos) {
+	public Response createPosition(Position pos) {
 		try {
 			posRepo.insertPosition(pos.getPositionName());
-			return pos;
+			return Response.ok(pos).build();
 		}catch(Exception e) {
 			e.getMessage();
 		}
@@ -44,14 +45,14 @@ public class PositionService {
 	@Path("/update")
 	@Produces(value= {MediaType.APPLICATION_JSON})
 	@Consumes(value = {MediaType.APPLICATION_JSON})
-	public Position updateDepartment(Position pos) {
+	public Response updateDepartment(Position pos) {
 		try {
 			posRepo.updatePosition(pos);
-			return pos;
+			return Response.ok(pos).build();
 		}catch(Exception e) {
 			e.getMessage();
 		}
-		return null;
+		return Response.status(Status.BAD_REQUEST).build();
 	}
 	
 	@DELETE
@@ -77,31 +78,31 @@ public class PositionService {
 	@Secured
 	@Path("/get")
 	@Produces(value = {MediaType.APPLICATION_JSON})
-	public GenericEntity<List<Position>> getallPosition() {
+	public Response getallPosition() {
 		List<Position> dep = new ArrayList<>();
 		GenericEntity<List<Position>> listPos = null;
 		try {
 			dep = posRepo.selectAllPosition();
 			listPos = new GenericEntity<>(dep) {};
-			return listPos;
+			return Response.ok(listPos).build();
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return Response.noContent().build();
 	}
 	
 	@GET
 	@Secured
 	@Path("/get/{id}")
 	@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-	public Position getPositionById(@PathParam("id") Integer id) {
+	public Response getPositionById(@PathParam("id") Integer id) {
 		try {
 			Position dep = posRepo.getPositionById(id);
-			return dep;
+			return Response.ok(dep).build();
 		}catch(Exception e) {
 			e.getMessage();
 		}
-		return null;
+		return Response.noContent().build();
 	}
 
 }

@@ -1,10 +1,18 @@
 package org.ssglobal.training.codes.cors;
 
 import java.io.IOException;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.ssglobal.training.codes.repository.UserTokenRepository;
 import org.ssglobal.training.codes.service.UserService;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.NotAuthorizedException;
@@ -54,10 +62,23 @@ public class MyCorsFilter implements ContainerResponseFilter, ContainerRequestFi
 		responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean validateToken(String token) {
 		UserTokenRepository userTokenRepository = new UserTokenRepository();
-		if (userTokenRepository.isUserTokenExists(token)) {
-			return true;
+		String[] chunks = token.split("\\.");
+		Decoder decoder = Base64.getUrlDecoder();
+		String payload = new String(decoder.decode(chunks[1]));
+		try {
+			HashMap<String,Object> result = new ObjectMapper().readValue(payload, HashMap.class);
+			Date tokenExpiresAt = new Date(Long.parseLong(result.get("exp").toString()) * 1000L);
+			
+			if (new Date().getTime() < tokenExpiresAt.getTime() && userTokenRepository.isUserTokenExists(token)) {
+				return true;
+			}
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
